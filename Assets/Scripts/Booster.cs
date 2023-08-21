@@ -14,13 +14,13 @@ public class Booster : TileEntity
 	    }
 	    protected void AddTile(List<GameObject> tiles, int levelWidth, int x, int y)
 	    {
-	        if (x < 0 || x >= LevelManager.instance.level.width ||
-	            y < 0 || y >= LevelManager.instance.level.height)
+	        if (x < 0 || x >= LevelManager.instance.level.grid_width ||
+	            y < 0 || y >= LevelManager.instance.level.grid_height)
 	        {
 	            return;
 	        }
 
-	        var tileIndex = x + (y * LevelManager.instance.level.width);
+	        var tileIndex = x + (y * LevelManager.instance.level.grid_width);
 	        var tile = LevelManager.instance.tileEntities[tileIndex];
 		    if (tile != null)
 		    {
@@ -44,7 +44,7 @@ public class Booster : TileEntity
 	    }
 		protected bool IsValidTile(Level level, int x, int y)
         {
-            return x >= 0 && x < level.width && y >= 0 && y < level.height;
+            return x >= 0 && x < level.grid_width && y >= 0 && y < level.grid_height;
         }
 	}
 

@@ -17,11 +17,11 @@ public class LevelManager : MonoBehaviour
     private float blockHeight;
     private double horizontalSpacing = -0.02;
     private double verticalSpacing = -0.02;
-    private int generatedCollectables;
     public Transform levelLocation;
     [HideInInspector] public List<Vector2> tilePositions = new List<Vector2>();
     private float blockFallSpeed = 0.3f;
     public static LevelManager instance;
+    private int currentLevel = 01;
 
     private void Awake()
     {
@@ -30,10 +30,17 @@ public class LevelManager : MonoBehaviour
 
     private void Start()
     {
-        var serializer = new fsSerializer();
-        level = FileUtils.LoadJsonFile<Level>(serializer, "Levels/" + 1);
-        CreateBackgroundTiles();
+        GenerateLevel();
         mainCamera = Camera.main;
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.N))
+        {
+            currentLevel++;
+            GenerateLevel();
+        }
     }
 
     private GameObject CreateBlock(GameObject go)
@@ -43,14 +50,23 @@ public class LevelManager : MonoBehaviour
     }
 
 
-    private void CreateBackgroundTiles()
+    private void GenerateLevel()
     {
-        for (var j = 0; j < level.height; j++)
+        var serializer = new fsSerializer();
+        level = FileUtils.LoadJsonFile<Level>(serializer, "Levels/level_" + currentLevel);
+        level.grid.Reverse();
+        foreach (var entity in tileEntities)
         {
-            for (var i = 0; i < level.width; i++)
+            entity.GetComponent<PooledObject>().pool.ReturnObject(entity.gameObject);   
+        }
+        tileEntities.Clear();
+        tilePositions.Clear();
+        for (var j = 0; j < level.grid_height; j++)
+        {
+            for (var i = 0; i < level.grid_width; i++)
             {
-                var tileIndex = i + (j * level.width);
-                var tileToGet = gamePools.GetTileEntity(level, level.tiles[tileIndex]);
+                var tileIndex = i + (j * level.grid_width);
+                var tileToGet = gamePools.GetTileEntityWithString(level, level.grid[tileIndex]);
                 var tile = CreateBlock(tileToGet.gameObject);
                 var spriteRenderer = tile.GetComponent<SpriteRenderer>();
                 blockWidth = spriteRenderer.bounds.size.x;
@@ -58,12 +74,12 @@ public class LevelManager : MonoBehaviour
                 tile.transform.position = new Vector2((float)(i * (blockWidth + horizontalSpacing)),
                     (float)(-j * (blockHeight + verticalSpacing)));
                 tileEntities.Add(tile);
-                spriteRenderer.sortingOrder = level.height - j;
+                spriteRenderer.sortingOrder = level.grid_height - j;
             }
         }
 
-        var totalWidth = (level.width - 1) * (blockWidth + horizontalSpacing);
-        var totalHeight = (level.height - 1) * (blockHeight + verticalSpacing);
+        var totalWidth = (level.grid_width - 1) * (blockWidth + horizontalSpacing);
+        var totalHeight = (level.grid_height - 1) * (blockHeight + verticalSpacing);
         foreach (var block in tileEntities)
         {
             var newPos = block.transform.position;
@@ -73,44 +89,25 @@ public class LevelManager : MonoBehaviour
             block.transform.position = newPos;
             tilePositions.Add(newPos);
         }
-
-
         var zoomLevel = 1.4f;
         mainCamera.orthographicSize = (float)((totalWidth * zoomLevel) * (Screen.height / (float)Screen.width) * 0.5f);
-
-        var backgroundTiles = new GameObject("BackgroundTiles");
-        for (var j = 0; j < level.height; j++)
-        {
-            for (var i = 0; i < level.width; i++)
-            {
-                var tileIndex = i + (j * level.width);
-
-                var go = new GameObject("Background");
-                go.transform.parent = backgroundTiles.transform;
-                var sprite = go.AddComponent<SpriteRenderer>();
-                sprite.color = Color.black;
-                sprite.sortingLayerName = "Game";
-                sprite.sortingOrder = -2;
-                sprite.transform.position = tileEntities[tileIndex].transform.position;
-            }
-        }
     }
 
 
     public GameObject CreateNewBlock()
     {
-        return CreateBlock(gamePools.GetTileEntity(level, new BlockTile { type = BlockType.RandomBlock }).gameObject);
+        return CreateBlock(gamePools.GetTileEntity(level, new BlockTile { type = BlockType.rand }).gameObject);
     }
 
     public void ApplyGravity()
     {
         DOVirtual.DelayedCall(0.5f, () =>
         {
-            for (var i = 0; i < level.width; i++)
+            for (var i = 0; i < level.grid_width; i++)
             {
-                for (var j = level.height - 1; j >= 0; j--)
+                for (var j = level.grid_height - 1; j >= 0; j--)
                 {
-                    var tileIndex = i + (j * level.width);
+                    var tileIndex = i + (j * level.grid_width);
                     if (tileEntities[tileIndex] == null ||
                         IsEmptyBlock(tileEntities[tileIndex].GetComponent<TileEntity>()) ||
                         IsStoneBlock(tileEntities[tileIndex].GetComponent<TileEntity>()))
@@ -118,11 +115,10 @@ public class LevelManager : MonoBehaviour
                         continue;
                     }
 
-                    // Find bottom.
                     var bottom = -1;
-                    for (var k = j; k < level.height; k++)
+                    for (var k = j; k < level.grid_height; k++)
                     {
-                        var idx = i + (k * level.width);
+                        var idx = i + (k * level.grid_width);
                         if (tileEntities[idx] == null)
                         {
                             bottom = k;
@@ -130,7 +126,7 @@ public class LevelManager : MonoBehaviour
                         else
                         {
                             var block = tileEntities[idx].GetComponent<Block>();
-                            if (block != null && block.type == BlockType.Stone)
+                            if (block != null && block.type == BlockType.s)
                             {
                                 break;
                             }
@@ -143,10 +139,10 @@ public class LevelManager : MonoBehaviour
                         if (tile != null)
                         {
                             var numTilesToFall = bottom - j;
-                            tileEntities[tileIndex + (numTilesToFall * level.width)] =
+                            tileEntities[tileIndex + (numTilesToFall * level.grid_width)] =
                                 tileEntities[tileIndex];
                             var tween = tile.transform.DOMove(
-                                tilePositions[tileIndex + level.width * numTilesToFall],
+                                tilePositions[tileIndex + level.grid_width * numTilesToFall],
                                 blockFallSpeed).SetEase(Ease.InQuad);
                             tileEntities[tileIndex] = null;
                         }
@@ -154,12 +150,12 @@ public class LevelManager : MonoBehaviour
                 }
             }
 
-            for (var i = 0; i < level.width; i++)
+            for (var i = 0; i < level.grid_width; i++)
             {
                 var numEmpties = 0;
-                for (var j = 0; j < level.height; j++)
+                for (var j = 0; j < level.grid_height; j++)
                 {
-                    var idx = i + (j * level.width);
+                    var idx = i + (j * level.grid_width);
                     if (tileEntities[idx] == null)
                     {
                         numEmpties += 1;
@@ -167,7 +163,7 @@ public class LevelManager : MonoBehaviour
                     else
                     {
                         var block = tileEntities[idx].GetComponent<Block>();
-                        if (block != null && block.type == BlockType.Stone)
+                        if (block != null && block.type == BlockType.s)
                         {
                             break;
                         }
@@ -176,9 +172,9 @@ public class LevelManager : MonoBehaviour
 
                 if (numEmpties > 0)
                 {
-                    for (var j = 0; j < level.height; j++)
+                    for (var j = 0; j < level.grid_height; j++)
                     {
-                        var tileIndex = i + (j * level.width);
+                        var tileIndex = i + (j * level.grid_width);
                         var isEmptyTile = false;
                         var isStoneTile = false;
                         if (tileEntities[tileIndex] != null)
@@ -187,7 +183,7 @@ public class LevelManager : MonoBehaviour
                             if (blockTile != null)
                             {
                                 isEmptyTile = blockTile.type == BlockType.Empty;
-                                isStoneTile = blockTile.type == BlockType.Stone;
+                                isStoneTile = blockTile.type == BlockType.s;
                             }
 
                             if (isStoneTile)
@@ -213,7 +209,7 @@ public class LevelManager : MonoBehaviour
                         if (tileEntities[tileIndex] != null)
                         {
                             tileEntities[tileIndex].GetComponent<SpriteRenderer>().sortingOrder =
-                                level.height - j;
+                                level.grid_height - j;
                         }
                     }
                 }
@@ -241,18 +237,13 @@ public class LevelManager : MonoBehaviour
             CreateBooster(GetBoosterPool(booster.Key).GetObject(), blockIdx);
         }
     }
-
-    /// <summary>
-    /// Creates a booster at the specified index.
-    /// </summary>
-    /// <param name="booster">The booster to create.</param>
-    /// <param name="blockIdx">The index at which to create the booster.</param>
+    
     private void CreateBooster(GameObject booster, int blockIdx)
     {
         booster.transform.position = tilePositions[blockIdx];
         tileEntities[blockIdx] = booster;
-        var j = blockIdx / level.height;
-        booster.GetComponent<SpriteRenderer>().sortingOrder = level.height - j;
+        var j = blockIdx / level.grid_height;
+        booster.GetComponent<SpriteRenderer>().sortingOrder = level.grid_height - j;
     }
 
     private ObjectPool GetBoosterPool(BoosterType type)
@@ -280,7 +271,12 @@ public class LevelManager : MonoBehaviour
     private bool IsStoneBlock(TileEntity tileEntity)
     {
         var block = tileEntity as Block;
-        return block != null && block.type == BlockType.Stone;
+        return block != null && block.type == BlockType.s;
+    }
+    private bool IsVaseBlock(TileEntity tileEntity)
+    {
+        var block = tileEntity as Block;
+        return block != null && block.type == BlockType.v;
     }
 
     public Dictionary<BoosterType, int> boosterNeededMatches = new Dictionary<BoosterType, int>();

@@ -103,4 +103,4 @@ MonoBehaviour:
   onExplode:
     m_PersistentCalls:
       m_Calls: []
-  type: 8
+  type: 6

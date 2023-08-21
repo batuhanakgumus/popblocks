@@ -12,14 +12,14 @@
 	
 	public enum BlockType
 	{
-		Block1,
-		Block2,
-		Block3,
-		Block4,
-		RandomBlock,
+		b,
+		g,
+		r,
+		y,
+		rand,
 		Empty,
-		Box,
-		Stone,
-		Vase,
+		bo,
+		s,
+		v,
 	}
 

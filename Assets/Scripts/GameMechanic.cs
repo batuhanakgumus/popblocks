@@ -49,7 +49,7 @@ public class GameMechanic : MonoBehaviour
             foreach (var block in blocksToDestroy)
             {
                 var idx = levelManager.tileEntities.FindIndex(x => x == block);
-                DestroyConnectedStones(idx);
+                DestroyConnectedObstacles(idx);
                 DestroyTileEntity(block.GetComponent<TileEntity>(), idx);
             }
 
@@ -80,8 +80,8 @@ public class GameMechanic : MonoBehaviour
     {
         var level = levelManager.level;
         var idx = levelManager.tileEntities.FindIndex(x => x == go);
-        var i = idx % level.width;
-        var j = idx / level.width;
+        var i = idx % level.grid_width;
+        var j = idx / level.grid_width;
 
         var topTile = new TileDef(i, j - 1);
         var bottomTile = new TileDef(i, j + 1);
@@ -94,7 +94,7 @@ public class GameMechanic : MonoBehaviour
         {
             if (IsValidTileEntity(surroundingTile))
             {
-                var tileIndex = (level.width * surroundingTile.y) + surroundingTile.x;
+                var tileIndex = (level.grid_width * surroundingTile.y) + surroundingTile.x;
                 var tile = levelManager.tileEntities[tileIndex];
                 if (tile != null)
                 {
@@ -121,7 +121,7 @@ public class GameMechanic : MonoBehaviour
         {
             if (IsValidTileEntity(surroundingTile))
             {
-                var tileIndex = (level.width * surroundingTile.y) + surroundingTile.x;
+                var tileIndex = (level.grid_width * surroundingTile.y) + surroundingTile.x;
                 var tile = levelManager.tileEntities[tileIndex];
                 if (tile != null)
                 {
@@ -155,13 +155,12 @@ public class GameMechanic : MonoBehaviour
         }
     }
 
-    private int DestroyConnectedStones(int idx)
+    private void DestroyConnectedObstacles(int idx)
     {
         var level = levelManager.level;
-        var score = 0;
 
-        var i = idx % level.width;
-        var j = idx / level.width;
+        var i = idx % level.grid_width;
+        var j = idx / level.grid_width;
 
         var topTile = new TileDef(i, j - 1);
         var bottomTile = new TileDef(i, j + 1);
@@ -172,20 +171,18 @@ public class GameMechanic : MonoBehaviour
         {
             if (IsValidTileEntity(surroundingTile))
             {
-                var tileIndex = (level.width * surroundingTile.y) + surroundingTile.x;
+                var tileIndex = (level.grid_width * surroundingTile.y) + surroundingTile.x;
                 var tile = levelManager.tileEntities[tileIndex];
                 if (tile != null)
                 {
                     var block = tile.GetComponent<Block>();
-                    if (block != null && (block.type == BlockType.Stone || block.type == BlockType.Box))
+                    if (block != null && (block.type == BlockType.v || block.type == BlockType.bo))
                     {
                         DestroyTileEntity(block, tileIndex);
                     }
                 }
             }
         }
-
-        return score;
     }
 
     private void DestroyTileEntity(TileEntity tileEntity, int tileIndex)
@@ -193,25 +190,29 @@ public class GameMechanic : MonoBehaviour
         var block = tileEntity.GetComponent<Block>();
         if (block != null)
         {
-            //collect blocks
+            if (block.type == BlockType.v)
+            {
+                var vase = block.GetComponent<Vase>();
+                if (!vase.isDamaged)
+                {
+                    vase.TakeDamage();
+                    return;
+                }
+            }
         }
+
         tileEntity.Explode();
         levelManager.tileEntities[tileIndex] = null;
-        if (IsBoosterBlock(tileEntity))
-        {
-            DestroyBooster(tileEntity);
-        }
 
         tileEntity.GetComponent<PooledObject>().pool.ReturnObject(tileEntity.gameObject);
 
     }
-    
 
     private bool IsValidTileEntity(TileDef tileEntity)
     {
         var level = levelManager.level;
-        return tileEntity.x >= 0 && tileEntity.x < level.width &&
-               tileEntity.y >= 0 && tileEntity.y < level.height;
+        return tileEntity.x >= 0 && tileEntity.x < level.grid_width &&
+               tileEntity.y >= 0 && tileEntity.y < level.grid_height;
     }
 
 

@@ -7,66 +7,66 @@ public class TNT : Booster
     {
         var scene = LevelManager.instance;
         var tiles = new List<GameObject>();
-        var x = idx % scene.level.width;
-        var y = idx / scene.level.width;
+        var x = idx % scene.level.grid_width;
+        var y = idx / scene.level.grid_width;
         var combo = GetComboType(x, y);
         switch (combo)
         {
             case ComboType.None:
-                AddTile(tiles, scene.level.width, x, y);
-                AddTile(tiles, scene.level.width, x - 1, y - 1);
-                AddTile(tiles, scene.level.width, x, y - 1);
-                AddTile(tiles, scene.level.width, x + 1, y - 1);
-                AddTile(tiles, scene.level.width, x - 1, y);
-                AddTile(tiles, scene.level.width, x + 1, y);
-                AddTile(tiles, scene.level.width, x - 1, y + 1);
-                AddTile(tiles, scene.level.width, x, y + 1);
-                AddTile(tiles, scene.level.width, x + 1, y + 1);
+                AddTile(tiles, scene.level.grid_width, x, y);
+                AddTile(tiles, scene.level.grid_width, x - 1, y - 1);
+                AddTile(tiles, scene.level.grid_width, x, y - 1);
+                AddTile(tiles, scene.level.grid_width, x + 1, y - 1);
+                AddTile(tiles, scene.level.grid_width, x - 1, y);
+                AddTile(tiles, scene.level.grid_width, x + 1, y);
+                AddTile(tiles, scene.level.grid_width, x - 1, y + 1);
+                AddTile(tiles, scene.level.grid_width, x, y + 1);
+                AddTile(tiles, scene.level.grid_width, x + 1, y + 1);
                 break;
 
             case ComboType.RocketCombo:
 
                 for (int k = -1; k < 2; k++)
                 {
-                    for (var j = 0; j < LevelManager.instance.level.height; j++)
+                    for (var j = 0; j < LevelManager.instance.level.grid_height; j++)
                     {
-                        AddTile(tiles, LevelManager.instance.level.height, x + k, j);
+                        AddTile(tiles, LevelManager.instance.level.grid_height, x + k, j);
                     }
 
-                    for (var i = 0; i < LevelManager.instance.level.width; i++)
+                    for (var i = 0; i < LevelManager.instance.level.grid_width; i++)
                     {
-                        AddTile(tiles, LevelManager.instance.level.width, i, y + k);
+                        AddTile(tiles, LevelManager.instance.level.grid_width, i, y + k);
                     }
                 }
 
                 break;
 
             case ComboType.TNTCombo:
-                AddTile(tiles, scene.level.width, x, y);
-                AddTile(tiles, scene.level.width, x - 1, y - 1);
-                AddTile(tiles, scene.level.width, x, y - 1);
-                AddTile(tiles, scene.level.width, x + 1, y - 1);
-                AddTile(tiles, scene.level.width, x - 1, y);
-                AddTile(tiles, scene.level.width, x + 1, y);
-                AddTile(tiles, scene.level.width, x - 1, y + 1);
-                AddTile(tiles, scene.level.width, x, y + 1);
-                AddTile(tiles, scene.level.width, x + 1, y + 1);
-                AddTile(tiles, scene.level.width, x - 2, y - 2);
-                AddTile(tiles, scene.level.width, x - 1, y - 2);
-                AddTile(tiles, scene.level.width, x, y - 2);
-                AddTile(tiles, scene.level.width, x + 1, y - 2);
-                AddTile(tiles, scene.level.width, x + 2, y - 2);
-                AddTile(tiles, scene.level.width, x - 2, y - 1);
-                AddTile(tiles, scene.level.width, x + 2, y - 1);
-                AddTile(tiles, scene.level.width, x - 2, y);
-                AddTile(tiles, scene.level.width, x + 2, y);
-                AddTile(tiles, scene.level.width, x - 2, y + 1);
-                AddTile(tiles, scene.level.width, x + 2, y + 1);
-                AddTile(tiles, scene.level.width, x - 2, y + 2);
-                AddTile(tiles, scene.level.width, x - 1, y + 2);
-                AddTile(tiles, scene.level.width, x, y + 2);
-                AddTile(tiles, scene.level.width, x + 1, y + 2);
-                AddTile(tiles, scene.level.width, x + 2, y + 2);
+                AddTile(tiles, scene.level.grid_width, x, y);
+                AddTile(tiles, scene.level.grid_width, x - 1, y - 1);
+                AddTile(tiles, scene.level.grid_width, x, y - 1);
+                AddTile(tiles, scene.level.grid_width, x + 1, y - 1);
+                AddTile(tiles, scene.level.grid_width, x - 1, y);
+                AddTile(tiles, scene.level.grid_width, x + 1, y);
+                AddTile(tiles, scene.level.grid_width, x - 1, y + 1);
+                AddTile(tiles, scene.level.grid_width, x, y + 1);
+                AddTile(tiles, scene.level.grid_width, x + 1, y + 1);
+                AddTile(tiles, scene.level.grid_width, x - 2, y - 2);
+                AddTile(tiles, scene.level.grid_width, x - 1, y - 2);
+                AddTile(tiles, scene.level.grid_width, x, y - 2);
+                AddTile(tiles, scene.level.grid_width, x + 1, y - 2);
+                AddTile(tiles, scene.level.grid_width, x + 2, y - 2);
+                AddTile(tiles, scene.level.grid_width, x - 2, y - 1);
+                AddTile(tiles, scene.level.grid_width, x + 2, y - 1);
+                AddTile(tiles, scene.level.grid_width, x - 2, y);
+                AddTile(tiles, scene.level.grid_width, x + 2, y);
+                AddTile(tiles, scene.level.grid_width, x - 2, y + 1);
+                AddTile(tiles, scene.level.grid_width, x + 2, y + 1);
+                AddTile(tiles, scene.level.grid_width, x - 2, y + 2);
+                AddTile(tiles, scene.level.grid_width, x - 1, y + 2);
+                AddTile(tiles, scene.level.grid_width, x, y + 2);
+                AddTile(tiles, scene.level.grid_width, x + 1, y + 2);
+                AddTile(tiles, scene.level.grid_width, x + 2, y + 2);
                 break;
         }
 
@@ -103,7 +103,7 @@ public class TNT : Booster
     protected int GetComboPoints(int x, int y)
     {
         var scene = LevelManager.instance;
-        var idx = x + (y * scene.level.width);
+        var idx = x + (y * scene.level.grid_width);
         if (IsValidTile(scene.level, x, y) &&
             scene.tileEntities[idx] != null)
         {

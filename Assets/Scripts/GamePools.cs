@@ -51,35 +51,35 @@ public class GamePools : MonoBehaviour
             var blockTile = (BlockTile)tile;
             switch (blockTile.type)
             {
-                case BlockType.Block1:
+                case BlockType.b:
                     return block1Pool.GetObject().GetComponent<TileEntity>();
 
-                case BlockType.Block2:
+                case BlockType.g:
                     return block2Pool.GetObject().GetComponent<TileEntity>();
 
-                case BlockType.Block3:
+                case BlockType.r:
                     return block3Pool.GetObject().GetComponent<TileEntity>();
 
-                case BlockType.Block4:
+                case BlockType.y:
                     return block4Pool.GetObject().GetComponent<TileEntity>();
                 
 
-                case BlockType.RandomBlock:
+                case BlockType.rand:
                 {
-                    var randomIdx = Random.Range(0, level.availableColors.Count);
-                    return _blockPools[(int)level.availableColors[randomIdx]].GetObject().GetComponent<TileEntity>();
+                    var randomIdx = Random.Range(0, 4);
+                    return _blockPools[randomIdx].GetObject().GetComponent<TileEntity>();
                 }
 
                 case BlockType.Empty:
                     return emptyTilePool.GetObject().GetComponent<TileEntity>();
 
-                case BlockType.Box:
+                case BlockType.bo:
                     return boxPool.GetObject().GetComponent<TileEntity>();
 
-                case BlockType.Stone:
+                case BlockType.s:
                     return stonePool.GetObject().GetComponent<TileEntity>();
                 
-                case BlockType.Vase:
+                case BlockType.v:
                     return vasePool.GetObject().GetComponent<TileEntity>();
             }
         }
@@ -99,6 +99,54 @@ public class GamePools : MonoBehaviour
             }
         }
 
+        return null;
+    }
+
+    public TileEntity GetTileEntityWithString(Level level, string tile)
+    {
+        if (tile is string)
+        {
+            var blockTile = tile;
+            switch (blockTile)
+            {
+                case "b":
+                    return block1Pool.GetObject().GetComponent<TileEntity>();
+
+                case "g":
+                    return block2Pool.GetObject().GetComponent<TileEntity>();
+
+                case "r":
+                    return block3Pool.GetObject().GetComponent<TileEntity>();
+
+                case "y":
+                    return block4Pool.GetObject().GetComponent<TileEntity>();
+
+
+                case "rand":
+                {
+                    var randomIdx = Random.Range(0, 4);
+                    return _blockPools[randomIdx].GetObject().GetComponent<TileEntity>();
+                }
+
+                case "Empty":
+                    return emptyTilePool.GetObject().GetComponent<TileEntity>();
+
+                case "bo":
+                    return boxPool.GetObject().GetComponent<TileEntity>();
+
+                case "s":
+                    return stonePool.GetObject().GetComponent<TileEntity>();
+
+                case "v":
+                    return vasePool.GetObject().GetComponent<TileEntity>();
+                case "roh":
+                    return horizontalRocketPool.GetObject().GetComponent<TileEntity>();
+                case "rov":
+                    return verticalRocketPool.GetObject().GetComponent<TileEntity>();
+                case "t":
+                    return tntPool.GetObject().GetComponent<TileEntity>();
+            }
+        }
         return null;
     }
 }

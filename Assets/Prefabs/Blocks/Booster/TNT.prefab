@@ -10,8 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 4855290835224960}
   - component: {fileID: 212249567313156862}
-  - component: {fileID: 1461955665362480620}
   - component: {fileID: 3328714566519610531}
+  - component: {fileID: 1461955665362480620}
   m_Layer: 0
   m_Name: TNT
   m_TagString: Block
@@ -86,25 +86,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &1461955665362480620
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1606762470730418}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 50bf3e1fd1b634af682777000af60f5e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  onSpawn:
-    m_PersistentCalls:
-      m_Calls: []
-  onExplode:
-    m_PersistentCalls:
-      m_Calls: []
-  type: 2
 --- !u!61 &3328714566519610531
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -131,3 +112,22 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1.4, y: 1.4}
   m_EdgeRadius: 0
+--- !u!114 &1461955665362480620
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1606762470730418}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50bf3e1fd1b634af682777000af60f5e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  onSpawn:
+    m_PersistentCalls:
+      m_Calls: []
+  onExplode:
+    m_PersistentCalls:
+      m_Calls: []
+  type: 2

@@ -15,8 +15,8 @@ public class Rocket : Booster
     public override List<GameObject> Resolve(int idx)
     {
         var tiles = new List<GameObject>();
-        var x = idx % LevelManager.instance.level.width;
-        var y = idx / LevelManager.instance.level.width;
+        var x = idx % LevelManager.instance.level.grid_width;
+        var y = idx / LevelManager.instance.level.grid_width;
         switch (direction)
         {
             case Direction.Horizontal:
@@ -25,9 +25,9 @@ public class Rocket : Booster
                 switch (combo)
                 {
                     case ComboType.None:
-                        for (var i = 0; i < LevelManager.instance.level.width; i++)
+                        for (var i = 0; i < LevelManager.instance.level.grid_width; i++)
                         {
-                            AddTile(tiles, LevelManager.instance.level.width, i, y);
+                            AddTile(tiles, LevelManager.instance.level.grid_width, i, y);
                             Debug.Log("None combo");
                         }
 
@@ -35,28 +35,28 @@ public class Rocket : Booster
 
                     case ComboType.RocketCombo:
 
-                        for (var j = 0; j < LevelManager.instance.level.height; j++)
+                        for (var j = 0; j < LevelManager.instance.level.grid_height; j++)
                         {
-                            AddTile(tiles, LevelManager.instance.level.height, x, j);
+                            AddTile(tiles, LevelManager.instance.level.grid_height, x, j);
                         }
 
-                        for (var i = 0; i < LevelManager.instance.level.width; i++)
+                        for (var i = 0; i < LevelManager.instance.level.grid_width; i++)
                         {
-                            AddTile(tiles, LevelManager.instance.level.width, i, y);
+                            AddTile(tiles, LevelManager.instance.level.grid_width, i, y);
                         }
                         break;
 
                     case ComboType.TNTCombo:
                         for (int k = -1; k < 2; k++)
                         {
-                            for (var j = 0; j < LevelManager.instance.level.height; j++)
+                            for (var j = 0; j < LevelManager.instance.level.grid_height; j++)
                             {
-                                AddTile(tiles, LevelManager.instance.level.height, x + k, j);
+                                AddTile(tiles, LevelManager.instance.level.grid_height, x + k, j);
                             }
 
-                            for (var i = 0; i < LevelManager.instance.level.width; i++)
+                            for (var i = 0; i < LevelManager.instance.level.grid_width; i++)
                             {
-                                AddTile(tiles, LevelManager.instance.level.width, i, y + k);
+                                AddTile(tiles, LevelManager.instance.level.grid_width, i, y + k);
                             }
                         }
                         break;
@@ -71,22 +71,22 @@ public class Rocket : Booster
                 {
                     case ComboType.None:
                     {
-                        for (var j = 0; j < LevelManager.instance.level.height; j++)
+                        for (var j = 0; j < LevelManager.instance.level.grid_height; j++)
                         {
-                            AddTile(tiles, LevelManager.instance.level.width, x, j);
+                            AddTile(tiles, LevelManager.instance.level.grid_width, x, j);
                         }
 
                         break;
                     }
                     case ComboType.RocketCombo:
-                        for (var j = 0; j < LevelManager.instance.level.height; j++)
+                        for (var j = 0; j < LevelManager.instance.level.grid_height; j++)
                         {
-                            AddTile(tiles, LevelManager.instance.level.height, x, j);
+                            AddTile(tiles, LevelManager.instance.level.grid_height, x, j);
                         }
 
-                        for (var i = 0; i < LevelManager.instance.level.width; i++)
+                        for (var i = 0; i < LevelManager.instance.level.grid_width; i++)
                         {
-                            AddTile(tiles, LevelManager.instance.level.width, i, y);
+                            AddTile(tiles, LevelManager.instance.level.grid_width, i, y);
                             Debug.Log("None combo");
                         }
 
@@ -96,14 +96,14 @@ public class Rocket : Booster
                     case ComboType.TNTCombo:
                         for (int k = -1; k < 2; k++)
                         {
-                            for (var j = 0; j < LevelManager.instance.level.height; j++)
+                            for (var j = 0; j < LevelManager.instance.level.grid_height; j++)
                             {
-                                AddTile(tiles, LevelManager.instance.level.height, x + k, j);
+                                AddTile(tiles, LevelManager.instance.level.grid_height, x + k, j);
                             }
 
-                            for (var i = 0; i < LevelManager.instance.level.width; i++)
+                            for (var i = 0; i < LevelManager.instance.level.grid_width; i++)
                             {
-                                AddTile(tiles, LevelManager.instance.level.width, i, y + k);
+                                AddTile(tiles, LevelManager.instance.level.grid_width, i, y + k);
                             }
                         }
                         break;
@@ -145,7 +145,7 @@ public class Rocket : Booster
     protected int GetComboPoints(int x, int y)
     {
         var tileEntities = LevelManager.instance.tileEntities;
-        var idx = x + (y * LevelManager.instance.level.width);
+        var idx = x + (y * LevelManager.instance.level.grid_width);
         if (IsValidTile(LevelManager.instance.level, x, y) &&
             tileEntities != null)
         {

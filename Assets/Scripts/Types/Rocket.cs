@@ -28,7 +28,6 @@ public class Rocket : Booster
                         for (var i = 0; i < LevelManager.instance.level.grid_width; i++)
                         {
                             AddTile(tiles, LevelManager.instance.level.grid_width, i, y);
-                            Debug.Log("None combo");
                         }
 
                         break;
@@ -87,10 +86,8 @@ public class Rocket : Booster
                         for (var i = 0; i < LevelManager.instance.level.grid_width; i++)
                         {
                             AddTile(tiles, LevelManager.instance.level.grid_width, i, y);
-                            Debug.Log("None combo");
                         }
 
-                        Debug.Log("Rocket combo");
                         break;
 
                     case ComboType.TNTCombo:

@@ -44,43 +44,43 @@ public class GamePools : MonoBehaviour
     /// <param name="level">The level.</param>
     /// <param name="tile">The level tile.</param>
     /// <returns>The tile entity corresponding to the specified level tile.</returns>
-    public TileEntity GetTileEntity(Level level, LevelTile tile)
+    public Cell GetCell(Level level, LevelTile tile)
     {
         if (tile is BlockTile)
         {
             var blockTile = (BlockTile)tile;
             switch (blockTile.type)
             {
-                case BlockType.b:
-                    return block1Pool.GetObject().GetComponent<TileEntity>();
+                case CubeType.b:
+                    return block1Pool.GetObject().GetComponent<Cell>();
 
-                case BlockType.g:
-                    return block2Pool.GetObject().GetComponent<TileEntity>();
+                case CubeType.g:
+                    return block2Pool.GetObject().GetComponent<Cell>();
 
-                case BlockType.r:
-                    return block3Pool.GetObject().GetComponent<TileEntity>();
+                case CubeType.r:
+                    return block3Pool.GetObject().GetComponent<Cell>();
 
-                case BlockType.y:
-                    return block4Pool.GetObject().GetComponent<TileEntity>();
+                case CubeType.y:
+                    return block4Pool.GetObject().GetComponent<Cell>();
                 
 
-                case BlockType.rand:
+                case CubeType.rand:
                 {
                     var randomIdx = Random.Range(0, 4);
-                    return _blockPools[randomIdx].GetObject().GetComponent<TileEntity>();
+                    return _blockPools[randomIdx].GetObject().GetComponent<Cell>();
                 }
 
-                case BlockType.Empty:
-                    return emptyTilePool.GetObject().GetComponent<TileEntity>();
+                case CubeType.Empty:
+                    return emptyTilePool.GetObject().GetComponent<Cell>();
 
-                case BlockType.bo:
-                    return boxPool.GetObject().GetComponent<TileEntity>();
+                case CubeType.bo:
+                    return boxPool.GetObject().GetComponent<Cell>();
 
-                case BlockType.s:
-                    return stonePool.GetObject().GetComponent<TileEntity>();
+                case CubeType.s:
+                    return stonePool.GetObject().GetComponent<Cell>();
                 
-                case BlockType.v:
-                    return vasePool.GetObject().GetComponent<TileEntity>();
+                case CubeType.v:
+                    return vasePool.GetObject().GetComponent<Cell>();
             }
         }
         else if (tile is BoosterTile)
@@ -89,20 +89,20 @@ public class GamePools : MonoBehaviour
             switch (boosterTile.type)
             {
                 case BoosterType.HorizontalRocket:
-                    return horizontalRocketPool.GetObject().GetComponent<TileEntity>();
+                    return horizontalRocketPool.GetObject().GetComponent<Cell>();
 
                 case BoosterType.VerticalRocket:
-                    return verticalRocketPool.GetObject().GetComponent<TileEntity>();
+                    return verticalRocketPool.GetObject().GetComponent<Cell>();
 
                 case BoosterType.TNT:
-                    return tntPool.GetObject().GetComponent<TileEntity>();
+                    return tntPool.GetObject().GetComponent<Cell>();
             }
         }
 
         return null;
     }
 
-    public TileEntity GetTileEntityWithString(Level level, string tile)
+    public Cell GetCellWithString(Level level, string tile)
     {
         if (tile is string)
         {
@@ -110,41 +110,43 @@ public class GamePools : MonoBehaviour
             switch (blockTile)
             {
                 case "b":
-                    return block1Pool.GetObject().GetComponent<TileEntity>();
+                    return block1Pool.GetObject().GetComponent<Cell>();
 
                 case "g":
-                    return block2Pool.GetObject().GetComponent<TileEntity>();
+                    return block2Pool.GetObject().GetComponent<Cell>();
 
                 case "r":
-                    return block3Pool.GetObject().GetComponent<TileEntity>();
+                    return block3Pool.GetObject().GetComponent<Cell>();
 
                 case "y":
-                    return block4Pool.GetObject().GetComponent<TileEntity>();
-
-
+                    return block4Pool.GetObject().GetComponent<Cell>();
+                
                 case "rand":
                 {
                     var randomIdx = Random.Range(0, 4);
-                    return _blockPools[randomIdx].GetObject().GetComponent<TileEntity>();
+                    return _blockPools[randomIdx].GetObject().GetComponent<Cell>();
                 }
 
                 case "Empty":
-                    return emptyTilePool.GetObject().GetComponent<TileEntity>();
+                    return emptyTilePool.GetObject().GetComponent<Cell>();
 
                 case "bo":
-                    return boxPool.GetObject().GetComponent<TileEntity>();
+                    return boxPool.GetObject().GetComponent<Cell>();
 
                 case "s":
-                    return stonePool.GetObject().GetComponent<TileEntity>();
+                    return stonePool.GetObject().GetComponent<Cell>();
 
                 case "v":
-                    return vasePool.GetObject().GetComponent<TileEntity>();
+                    return vasePool.GetObject().GetComponent<Cell>();
+                
                 case "roh":
-                    return horizontalRocketPool.GetObject().GetComponent<TileEntity>();
+                    return horizontalRocketPool.GetObject().GetComponent<Cell>();
+                
                 case "rov":
-                    return verticalRocketPool.GetObject().GetComponent<TileEntity>();
+                    return verticalRocketPool.GetObject().GetComponent<Cell>();
+                
                 case "t":
-                    return tntPool.GetObject().GetComponent<TileEntity>();
+                    return tntPool.GetObject().GetComponent<Cell>();
             }
         }
         return null;

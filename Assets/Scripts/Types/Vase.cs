@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Vase : Block
+public class Vase : Cube
 {
     private SpriteRenderer _renderer;
     public Sprite brokenVase;

@@ -1,9 +1,8 @@
+using System;
 using System.Collections.Generic;
 
 
-/// <summary>
-/// This class stores the settings of a game level.
-/// </summary>
+[Serializable]
 public class Level
 {
     public int level_number;

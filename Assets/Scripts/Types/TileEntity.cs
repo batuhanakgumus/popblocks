@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.Events;
 
-public class TileEntity : MonoBehaviour
+public class Cell : MonoBehaviour
 {
     public UnityEvent onSpawn;
     public UnityEvent onExplode;

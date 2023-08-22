@@ -18,10 +18,10 @@ public class LevelManager : MonoBehaviour
     private double horizontalSpacing = -0.02;
     private double verticalSpacing = -0.02;
     public Transform levelLocation;
-    [HideInInspector] public List<Vector2> tilePositions = new List<Vector2>();
+    public List<Vector2> tilePositions = new List<Vector2>();
     private float blockFallSpeed = 0.3f;
     public static LevelManager instance;
-    private int currentLevel = 01;
+    private int currentLevel = 1;
 
     private void Awake()
     {
@@ -45,7 +45,7 @@ public class LevelManager : MonoBehaviour
 
     private GameObject CreateBlock(GameObject go)
     {
-        go.GetComponent<TileEntity>().Spawn();
+        go.GetComponent<Cell>().Spawn();
         return go;
     }
 
@@ -66,7 +66,7 @@ public class LevelManager : MonoBehaviour
             for (var i = 0; i < level.grid_width; i++)
             {
                 var tileIndex = i + (j * level.grid_width);
-                var tileToGet = gamePools.GetTileEntityWithString(level, level.grid[tileIndex]);
+                var tileToGet = gamePools.GetCellWithString(level, level.grid[tileIndex]);
                 var tile = CreateBlock(tileToGet.gameObject);
                 var spriteRenderer = tile.GetComponent<SpriteRenderer>();
                 blockWidth = spriteRenderer.bounds.size.x;
@@ -91,12 +91,13 @@ public class LevelManager : MonoBehaviour
         }
         var zoomLevel = 1.4f;
         mainCamera.orthographicSize = (float)((totalWidth * zoomLevel) * (Screen.height / (float)Screen.width) * 0.5f);
+        mainCamera.transform.LookAt(gamePools.transform);
     }
 
 
     public GameObject CreateNewBlock()
     {
-        return CreateBlock(gamePools.GetTileEntity(level, new BlockTile { type = BlockType.rand }).gameObject);
+        return CreateBlock(gamePools.GetCell(level, new BlockTile { type = CubeType.rand }).gameObject);
     }
 
     public void ApplyGravity()
@@ -105,12 +106,12 @@ public class LevelManager : MonoBehaviour
         {
             for (var i = 0; i < level.grid_width; i++)
             {
-                for (var j = level.grid_height - 1; j >= 0; j--)
+                for (var j= level.grid_height-1 ; j >0 ; j--)
                 {
                     var tileIndex = i + (j * level.grid_width);
                     if (tileEntities[tileIndex] == null ||
-                        IsEmptyBlock(tileEntities[tileIndex].GetComponent<TileEntity>()) ||
-                        IsStoneBlock(tileEntities[tileIndex].GetComponent<TileEntity>()))
+                        IsEmptyBlock(tileEntities[tileIndex].GetComponent<Cell>()) ||
+                        IsStoneBlock(tileEntities[tileIndex].GetComponent<Cell>()))
                     {
                         continue;
                     }
@@ -125,8 +126,8 @@ public class LevelManager : MonoBehaviour
                         }
                         else
                         {
-                            var block = tileEntities[idx].GetComponent<Block>();
-                            if (block != null && block.type == BlockType.s)
+                            var block = tileEntities[idx].GetComponent<Cube>();
+                            if (block != null && block.type == CubeType.s)
                             {
                                 break;
                             }
@@ -162,8 +163,8 @@ public class LevelManager : MonoBehaviour
                     }
                     else
                     {
-                        var block = tileEntities[idx].GetComponent<Block>();
-                        if (block != null && block.type == BlockType.s)
+                        var block = tileEntities[idx].GetComponent<Cube>();
+                        if (block != null && block.type == CubeType.s)
                         {
                             break;
                         }
@@ -179,11 +180,11 @@ public class LevelManager : MonoBehaviour
                         var isStoneTile = false;
                         if (tileEntities[tileIndex] != null)
                         {
-                            var blockTile = tileEntities[tileIndex].GetComponent<Block>();
+                            var blockTile = tileEntities[tileIndex].GetComponent<Cube>();
                             if (blockTile != null)
                             {
-                                isEmptyTile = blockTile.type == BlockType.Empty;
-                                isStoneTile = blockTile.type == BlockType.s;
+                                isEmptyTile = blockTile.type == CubeType.Empty;
+                                isStoneTile = blockTile.type == CubeType.s;
                             }
 
                             if (isStoneTile)
@@ -217,7 +218,7 @@ public class LevelManager : MonoBehaviour
         });
     }
 
-    public void CreateBooster(int numMatchedBlocks, int blockIdx)
+    public void CreateBooster(int numMatchedBlocks, int cubeId)
     {
         var eligibleBoosters = new List<KeyValuePair<BoosterType, int>>();
         foreach (var pair in boosterNeededMatches)
@@ -234,15 +235,15 @@ public class LevelManager : MonoBehaviour
             eligibleBoosters.RemoveAll(x => x.Value != max);
             var idx = UnityEngine.Random.Range(0, eligibleBoosters.Count);
             var booster = eligibleBoosters[idx];
-            CreateBooster(GetBoosterPool(booster.Key).GetObject(), blockIdx);
+            CreateBooster(GetBoosterPool(booster.Key).GetObject(), cubeId);
         }
     }
     
-    private void CreateBooster(GameObject booster, int blockIdx)
+    private void CreateBooster(GameObject booster, int cubeId)
     {
-        booster.transform.position = tilePositions[blockIdx];
-        tileEntities[blockIdx] = booster;
-        var j = blockIdx / level.grid_height;
+        booster.transform.position = tilePositions[cubeId];
+        tileEntities[cubeId] = booster;
+        var j = cubeId / level.grid_height;
         booster.GetComponent<SpriteRenderer>().sortingOrder = level.grid_height - j;
     }
 
@@ -262,21 +263,16 @@ public class LevelManager : MonoBehaviour
 
         return null;
     }
-    private bool IsEmptyBlock(TileEntity tileEntity)
+    private bool IsEmptyBlock(Cell Cell)
     {
-        var block = tileEntity as Block;
-        return block != null && block.type == BlockType.Empty;
+        var block = Cell as Cube;
+        return block != null && block.type == CubeType.Empty;
     }
 
-    private bool IsStoneBlock(TileEntity tileEntity)
+    private bool IsStoneBlock(Cell Cell)
     {
-        var block = tileEntity as Block;
-        return block != null && block.type == BlockType.s;
-    }
-    private bool IsVaseBlock(TileEntity tileEntity)
-    {
-        var block = tileEntity as Block;
-        return block != null && block.type == BlockType.v;
+        var block = Cell as Cube;
+        return block != null && block.type == CubeType.s;
     }
 
     public Dictionary<BoosterType, int> boosterNeededMatches = new Dictionary<BoosterType, int>();

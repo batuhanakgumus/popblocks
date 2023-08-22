@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 
 using UnityEngine;
-public class Booster : TileEntity
+public class Booster : Cell
 	{
 		public BoosterType type;
 		public virtual List<GameObject> Resolve(int idx)
@@ -24,8 +24,8 @@ public class Booster : TileEntity
 	        var tile = LevelManager.instance.tileEntities[tileIndex];
 		    if (tile != null)
 		    {
-			    var block = tile.GetComponent<Block>();
-			    if (block != null && (block.type == BlockType.Empty))
+			    var block = tile.GetComponent<Cube>();
+			    if (block != null && (block.type == CubeType.Empty))
 			    {
 				    return;
 			    }

@@ -4,7 +4,7 @@ public class LevelTile
 
 public class BlockTile : LevelTile
 {
-    public BlockType type;
+    public CubeType type;
 }
 
 public class BoosterTile : LevelTile

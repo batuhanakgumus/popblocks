@@ -5,7 +5,7 @@ public class TNT : Booster
 {
     public override List<GameObject> Resolve(int idx)
     {
-        var scene = LevelManager.instance;
+        var scene = LevelManager.Instance;
         var tiles = new List<GameObject>();
         var x = idx % scene.level.grid_width;
         var y = idx / scene.level.grid_width;
@@ -28,14 +28,14 @@ public class TNT : Booster
 
                 for (int k = -1; k < 2; k++)
                 {
-                    for (var j = 0; j < LevelManager.instance.level.grid_height; j++)
+                    for (var j = 0; j < LevelManager.Instance.level.grid_height; j++)
                     {
-                        AddTile(tiles, LevelManager.instance.level.grid_height, x + k, j);
+                        AddTile(tiles, LevelManager.Instance.level.grid_height, x + k, j);
                     }
 
-                    for (var i = 0; i < LevelManager.instance.level.grid_width; i++)
+                    for (var i = 0; i < LevelManager.Instance.level.grid_width; i++)
                     {
-                        AddTile(tiles, LevelManager.instance.level.grid_width, i, y + k);
+                        AddTile(tiles, LevelManager.Instance.level.grid_width, i, y + k);
                     }
                 }
 
@@ -102,16 +102,16 @@ public class TNT : Booster
     
     protected int GetComboPoints(int x, int y)
     {
-        var scene = LevelManager.instance;
+        var scene = LevelManager.Instance;
         var idx = x + (y * scene.level.grid_width);
         if (IsValidTile(scene.level, x, y) &&
             scene.tileEntities[idx] != null)
         {
-            if (scene.tileEntities[idx].GetComponent<TNT>() != null)
+            if (scene.tileEntities[idx].TryGetComponent(out TNT tnt))
             {
                 return 1;
             }
-            if (scene.tileEntities[idx].GetComponent<Rocket>() != null)
+            if (scene.tileEntities[idx].TryGetComponent(out Rocket rocket))
             {
                 return 10;
             }

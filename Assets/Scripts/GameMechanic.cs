@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Unity.PlasticSCM.Editor.WebApi;
 using UnityEngine;
 
 public class GameMechanic : MonoBehaviour
@@ -20,7 +19,7 @@ public class GameMechanic : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             var hit = Physics2D.Raycast(_mainCamera.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
-            if (hit.collider != null && hit.collider.gameObject.CompareTag("Block"))
+            if (hit.collider != null && hit.collider.gameObject.CompareTag("Cell"))
             {
                 var hitBlock = hit.collider.gameObject.GetComponent<Cell>();
                 _lastClickedPoint = hitBlock;
@@ -93,13 +92,9 @@ public class GameMechanic : MonoBehaviour
                 DestroyConnectedObstacles(idx);
                 DestroyCell(block.GetComponent<Cell>(), idx);
             }
-
+            levelManager.PerformMove();
             levelManager.CreateBooster(cellsToBeDestroyed.Count, cubeId);
             levelManager.ApplyGravity();
-        }
-        else
-        {
-            Debug.Log("Not matched");
         }
     }
 
@@ -177,6 +172,7 @@ public class GameMechanic : MonoBehaviour
         {
             levelManager.ApplyGravity();
         }
+        levelManager.PerformMove();
     }
 
     private void DestroyConnectedBoosters(Cell cellToDestroy, List<GameObject> cellsToBeDestroyed,
@@ -236,24 +232,30 @@ public class GameMechanic : MonoBehaviour
 
     private void DestroyCell(Cell Cell, int tileIndex)
     {
-        var block = Cell.GetComponent<Cube>();
-        var booster = Cell.GetComponent<Booster>();
-
-        if (block != null)
+        Cell.TryGetComponent(out Cube cube);
+        if (cube != null)
         {
-            if (block.type == CubeType.v)
+            if (cube.type == CubeType.v)
             {
-                var vase = block.GetComponent<Vase>();
+                cube.TryGetComponent(out Vase vase);
                 if (!vase.isDamaged)
                 {
                     vase.TakeDamage();
                     return;
                 }
+                levelManager.vaseGoalCount--;
+            }
+            if (cube.type == CubeType.s)
+            {
+                levelManager.stoneGoalCount--;
+            }
+            if (cube.type == CubeType.bo)
+            {
+                levelManager.boxGoalCount--;
             }
         }
         Cell.Explode();
         levelManager.tileEntities[tileIndex] = null;
-
         Cell.GetComponent<PooledObject>().pool.ReturnObject(Cell.gameObject);
 
     }

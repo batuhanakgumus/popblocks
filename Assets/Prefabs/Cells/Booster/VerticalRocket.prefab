@@ -10,11 +10,11 @@ GameObject:
   m_Component:
   - component: {fileID: 4855290835224960}
   - component: {fileID: 212249567313156862}
-  - component: {fileID: -138576962380858516}
-  - component: {fileID: 5786533043503486799}
+  - component: {fileID: 1546379428258452590}
+  - component: {fileID: 6389625167423115199}
   m_Layer: 0
-  m_Name: HorizontalRocket
-  m_TagString: Block
+  m_Name: VerticalRocket
+  m_TagString: Cell
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -75,18 +75,18 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 7fc4567b288254c9aa05d9778ea84caa, type: 3}
+  m_Sprite: {fileID: 21300000, guid: a67b35dd986e94d59a460cc5c493bb91, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1.4, y: 1.4}
+  m_Size: {x: 1.42, y: 1.62}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!61 &-138576962380858516
+--- !u!61 &1546379428258452590
 BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -101,10 +101,10 @@ BoxCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   m_SpriteTilingProperty:
-    border: {x: 0, y: 0.01, z: 0, w: 0}
+    border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1.4, y: 1.4}
-    newSize: {x: 1.4, y: 1.4}
+    oldSize: {x: 1.42, y: 1.62}
+    newSize: {x: 1.42, y: 1.62}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
@@ -112,7 +112,7 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1.4, y: 1.4}
   m_EdgeRadius: 0
---- !u!114 &5786533043503486799
+--- !u!114 &6389625167423115199
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -130,5 +130,5 @@ MonoBehaviour:
   onExplode:
     m_PersistentCalls:
       m_Calls: []
-  type: 0
-  direction: 0
+  type: 1
+  direction: 1

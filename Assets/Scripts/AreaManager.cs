@@ -1,19 +1,22 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using FullSerializer;
+using Newtonsoft.Json;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class AreaManager : MonoBehaviour
 {
     public AreaItem[] areas;
-    public List<bool> areaProgression;
     public Button levelButton;
     public TextMeshProUGUI levelButtonText;
-    private int _currentLevel=1;
+    private int _currentLevel;
+    public List<AreaState> areaProgression;
+    
     private void Awake()
     {
+        CheckAreaProgression();
         CheckLevel();
     }
 
@@ -29,12 +32,12 @@ public class AreaManager : MonoBehaviour
             }
             else
             {
-                if (_currentLevel>1)
-                {
-                    areaProgression[_currentLevel - 1] = true;
-                }
                 levelButtonText.text = _currentLevel.ToString();
-                areas[_currentLevel].Unlock();
+                if (_currentLevel > 1)
+                {
+                    areas[_currentLevel-2].areaState = AreaState.Unlocked;
+                    areas[_currentLevel-2].Initialize();
+                }
             }
         }
         else
@@ -43,4 +46,34 @@ public class AreaManager : MonoBehaviour
         }
     }
     
+
+    private void CheckAreaProgression()
+    {
+        if (PlayerPrefs.HasKey("areaProgression"))
+        {
+            areaProgression = JsonConvert.DeserializeObject<List<AreaState>>(PlayerPrefs.GetString("areaProgression"));
+            for (int i = 0; i < areas.Length; i++)
+            {
+                areas[i].areaState = areaProgression[i];
+                areas[i].Initialize();
+            }
+        }
+    }
+
+    private void SaveProgression()
+    {
+        for (int i = 0; i < areas.Length; i++)
+        {
+           areaProgression[i]=areas[i].areaState;
+        }
+        var progression = JsonConvert.SerializeObject(areaProgression);
+        PlayerPrefs.SetString("areaProgression", progression);
+        Debug.Log(progression);
+    }
+
+    public void GoGameScene()
+    {
+        SaveProgression();
+        SceneManager.LoadScene(1);
+    }
 }

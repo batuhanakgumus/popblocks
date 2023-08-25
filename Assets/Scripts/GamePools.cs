@@ -4,10 +4,10 @@ using UnityEngine.Assertions;
 
 public class GamePools : MonoBehaviour
 {
-    public ObjectPool block1Pool;
-    public ObjectPool block2Pool;
-    public ObjectPool block3Pool;
-    public ObjectPool block4Pool;
+    public ObjectPool blueCubePool;
+    public ObjectPool greenCubePool;
+    public ObjectPool RedCubePool;
+    public ObjectPool yellowCubePool;
     public ObjectPool emptyTilePool;
     public ObjectPool boxPool;
     public ObjectPool stonePool;
@@ -21,10 +21,10 @@ public class GamePools : MonoBehaviour
 
     private void Awake()
     {
-        Assert.IsNotNull(block1Pool);
-        Assert.IsNotNull(block2Pool);
-        Assert.IsNotNull(block3Pool);
-        Assert.IsNotNull(block4Pool);
+        Assert.IsNotNull(blueCubePool);
+        Assert.IsNotNull(greenCubePool);
+        Assert.IsNotNull(RedCubePool);
+        Assert.IsNotNull(yellowCubePool);
         Assert.IsNotNull(emptyTilePool);
         Assert.IsNotNull(boxPool);
         Assert.IsNotNull(stonePool);
@@ -32,10 +32,10 @@ public class GamePools : MonoBehaviour
         Assert.IsNotNull(verticalRocketPool);
         Assert.IsNotNull(tntPool);
 
-        _blockPools.Add(block1Pool);
-        _blockPools.Add(block2Pool);
-        _blockPools.Add(block3Pool);
-        _blockPools.Add(block4Pool);
+        _blockPools.Add(blueCubePool);
+        _blockPools.Add(greenCubePool);
+        _blockPools.Add(RedCubePool);
+        _blockPools.Add(yellowCubePool);
     }
 
     /// <summary>
@@ -44,24 +44,24 @@ public class GamePools : MonoBehaviour
     /// <param name="level">The level.</param>
     /// <param name="tile">The level tile.</param>
     /// <returns>The tile entity corresponding to the specified level tile.</returns>
-    public Cell GetCell(Level level, LevelTile tile)
+    public Cell GetCell(Level level, CellTile tile)
     {
-        if (tile is BlockTile)
+        if (tile is CubeTile)
         {
-            var blockTile = (BlockTile)tile;
+            var blockTile = (CubeTile)tile;
             switch (blockTile.type)
             {
                 case CubeType.b:
-                    return block1Pool.GetObject().GetComponent<Cell>();
+                    return blueCubePool.GetObject().GetComponent<Cell>();
 
                 case CubeType.g:
-                    return block2Pool.GetObject().GetComponent<Cell>();
+                    return greenCubePool.GetObject().GetComponent<Cell>();
 
                 case CubeType.r:
-                    return block3Pool.GetObject().GetComponent<Cell>();
+                    return RedCubePool.GetObject().GetComponent<Cell>();
 
                 case CubeType.y:
-                    return block4Pool.GetObject().GetComponent<Cell>();
+                    return yellowCubePool.GetObject().GetComponent<Cell>();
                 
 
                 case CubeType.rand:
@@ -110,16 +110,16 @@ public class GamePools : MonoBehaviour
             switch (blockTile)
             {
                 case "b":
-                    return block1Pool.GetObject().GetComponent<Cell>();
+                    return blueCubePool.GetObject().GetComponent<Cell>();
 
                 case "g":
-                    return block2Pool.GetObject().GetComponent<Cell>();
+                    return greenCubePool.GetObject().GetComponent<Cell>();
 
                 case "r":
-                    return block3Pool.GetObject().GetComponent<Cell>();
+                    return RedCubePool.GetObject().GetComponent<Cell>();
 
                 case "y":
-                    return block4Pool.GetObject().GetComponent<Cell>();
+                    return yellowCubePool.GetObject().GetComponent<Cell>();
                 
                 case "rand":
                 {

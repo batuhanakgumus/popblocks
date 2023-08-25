@@ -14,14 +14,14 @@ public class Booster : Cell
 	    }
 	    protected void AddTile(List<GameObject> tiles, int levelWidth, int x, int y)
 	    {
-	        if (x < 0 || x >= LevelManager.instance.level.grid_width ||
-	            y < 0 || y >= LevelManager.instance.level.grid_height)
+	        if (x < 0 || x >= LevelManager.Instance.level.grid_width ||
+	            y < 0 || y >= LevelManager.Instance.level.grid_height)
 	        {
 	            return;
 	        }
 
-	        var tileIndex = x + (y * LevelManager.instance.level.grid_width);
-	        var tile = LevelManager.instance.tileEntities[tileIndex];
+	        var tileIndex = x + (y * LevelManager.Instance.level.grid_width);
+	        var tile = LevelManager.Instance.tileEntities[tileIndex];
 		    if (tile != null)
 		    {
 			    var block = tile.GetComponent<Cube>();

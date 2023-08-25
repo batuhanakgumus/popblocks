@@ -10,10 +10,10 @@ GameObject:
   m_Component:
   - component: {fileID: 4855290835224960}
   - component: {fileID: 212249567313156862}
-  - component: {fileID: -8072030849010565671}
+  - component: {fileID: 270189326220971276}
   m_Layer: 0
-  m_Name: Vase
-  m_TagString: Block
+  m_Name: Box
+  m_TagString: Cell
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -74,7 +74,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: cf2d3fc1ab8b54b51933f52cc7be37ad, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 1d12e3b6158344ec7a5dffa371e82e17, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -85,7 +85,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &-8072030849010565671
+--- !u!114 &270189326220971276
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -94,7 +94,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1606762470730418}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 11429822f0abe49d0b2b1591c3475019, type: 3}
+  m_Script: {fileID: 11500000, guid: 9524fd6a4abf745e796e0eadcc689aa5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   onSpawn:
@@ -103,6 +103,4 @@ MonoBehaviour:
   onExplode:
     m_PersistentCalls:
       m_Calls: []
-  type: 8
-  brokenVase: {fileID: 21300000, guid: 8069e58e7edd0468aac2a60af8a7a4c7, type: 3}
-  isDamaged: 0
+  type: 6

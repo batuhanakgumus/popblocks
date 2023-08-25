@@ -141,7 +141,7 @@ public class Rocket : Booster
 
     protected int GetComboPoints(int x, int y)
     {
-        var tileEntities = LevelManager.Instance.tileEntities;
+        var tileEntities = LevelManager.Instance.cellEntities;
         var idx = x + (y * LevelManager.Instance.level.grid_width);
         if (IsValidTile(LevelManager.Instance.level, x, y) &&
             tileEntities[idx] != null)

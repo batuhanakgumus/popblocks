@@ -18,6 +18,7 @@ public class GamePools : MonoBehaviour
     public ObjectPool tntPool;
 
     private readonly List<ObjectPool> _blockPools = new List<ObjectPool>();
+    private readonly List<ObjectPool> _otherPools = new List<ObjectPool>();
 
     private void Awake()
     {
@@ -36,6 +37,14 @@ public class GamePools : MonoBehaviour
         _blockPools.Add(greenCubePool);
         _blockPools.Add(RedCubePool);
         _blockPools.Add(yellowCubePool);
+        
+        _blockPools.Add(emptyTilePool);
+        _blockPools.Add(boxPool);
+        _blockPools.Add(stonePool);
+        _blockPools.Add(vasePool);
+        _blockPools.Add(horizontalRocketPool);
+        _blockPools.Add(verticalRocketPool);
+        _blockPools.Add(tntPool);
     }
 
     /// <summary>
@@ -150,5 +159,17 @@ public class GamePools : MonoBehaviour
             }
         }
         return null;
+    }
+
+    public void ResetAllPools()
+    {
+        foreach (var pool in _blockPools)
+        {
+            pool.Reset();
+        }
+        foreach (var pool in _otherPools)
+        {
+            pool.Reset();
+        }
     }
 }

@@ -21,7 +21,7 @@ public class Booster : Cell
 	        }
 
 	        var tileIndex = x + (y * LevelManager.Instance.level.grid_width);
-	        var tile = LevelManager.Instance.tileEntities[tileIndex];
+	        var tile = LevelManager.Instance.cellEntities[tileIndex];
 		    if (tile != null)
 		    {
 			    var block = tile.GetComponent<Cube>();

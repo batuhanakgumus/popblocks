@@ -69,7 +69,6 @@ public class AreaManager : MonoBehaviour
         }
         var progression = JsonConvert.SerializeObject(areaProgression);
         PlayerPrefs.SetString("areaProgression", progression);
-        Debug.Log(progression);
     }
 
     public void GoGameScene()

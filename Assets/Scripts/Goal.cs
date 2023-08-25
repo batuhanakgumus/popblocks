@@ -47,6 +47,7 @@ public class Goal : MonoBehaviour
         goalText.text = goalAmount.ToString();
         if (goalAmount<=0)
         {
+            goalText.enabled = false;
             completed.SetActive(true);
             return true;
         }

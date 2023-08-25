@@ -14,14 +14,15 @@ public class TNT : Booster
         {
             case ComboType.None:
                 AddTile(tiles, scene.level.grid_width, x, y);
-                AddTile(tiles, scene.level.grid_width, x - 1, y - 1);
-                AddTile(tiles, scene.level.grid_width, x, y - 1);
-                AddTile(tiles, scene.level.grid_width, x + 1, y - 1);
-                AddTile(tiles, scene.level.grid_width, x - 1, y);
-                AddTile(tiles, scene.level.grid_width, x + 1, y);
-                AddTile(tiles, scene.level.grid_width, x - 1, y + 1);
-                AddTile(tiles, scene.level.grid_width, x, y + 1);
                 AddTile(tiles, scene.level.grid_width, x + 1, y + 1);
+                AddTile(tiles, scene.level.grid_width, x, y + 1);
+                AddTile(tiles, scene.level.grid_width, x + 1, y);
+                
+                AddTile(tiles, scene.level.grid_width, x, y - 1);
+                AddTile(tiles, scene.level.grid_width, x - 1, y);
+                AddTile(tiles, scene.level.grid_width, x - 1, y - 1);
+                AddTile(tiles, scene.level.grid_width, x + 1, y - 1);
+                AddTile(tiles, scene.level.grid_width, x - 1, y + 1);
                 break;
 
             case ComboType.RocketCombo:
@@ -105,13 +106,13 @@ public class TNT : Booster
         var scene = LevelManager.Instance;
         var idx = x + (y * scene.level.grid_width);
         if (IsValidTile(scene.level, x, y) &&
-            scene.tileEntities[idx] != null)
+            scene.cellEntities[idx] != null)
         {
-            if (scene.tileEntities[idx].TryGetComponent(out TNT tnt))
+            if (scene.cellEntities[idx].TryGetComponent(out TNT tnt))
             {
                 return 1;
             }
-            if (scene.tileEntities[idx].TryGetComponent(out Rocket rocket))
+            if (scene.cellEntities[idx].TryGetComponent(out Rocket rocket))
             {
                 return 10;
             }

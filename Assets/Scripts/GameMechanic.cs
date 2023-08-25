@@ -5,10 +5,6 @@ public class GameMechanic : MonoBehaviour
 {
     public LevelManager levelManager;
     private Camera _mainCamera;
-    private Cell _lastClickedPoint;
-    
-
-
     private void Start()
     {
         _mainCamera = Camera.main;
@@ -16,13 +12,12 @@ public class GameMechanic : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && !levelManager.isGameBusy)
         {
             var hit = Physics2D.Raycast(_mainCamera.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
             if (hit.collider != null && hit.collider.gameObject.CompareTag("Cell"))
             {
                 var hitBlock = hit.collider.gameObject.GetComponent<Cell>();
-                _lastClickedPoint = hitBlock;
                 if (IsBoosterBlock(hitBlock))
                 {
                     DestroyBooster(hitBlock,true);
@@ -42,14 +37,14 @@ public class GameMechanic : MonoBehaviour
 
     private void DestroyBlock(Cell cellToDestroy)
     {
-        var cubeId = levelManager.tileEntities.FindIndex(x => x == cellToDestroy.gameObject);
+        var cubeId = levelManager.cellEntities.FindIndex(x => x == cellToDestroy.gameObject);
         var cellsToBeDestroyed = new List<GameObject>();
         GetMatches(cellToDestroy.gameObject, cellsToBeDestroyed);
         if (cellsToBeDestroyed.Count > 0)
         {
             foreach (var block in cellsToBeDestroyed)
             {
-                var idx = levelManager.tileEntities.FindIndex(x => x == block);
+                var idx = levelManager.cellEntities.FindIndex(x => x == block);
                 DestroyConnectedObstacles(idx);
                 DestroyCell(block.GetComponent<Cell>(), idx);
             }
@@ -62,7 +57,7 @@ public class GameMechanic : MonoBehaviour
     public void GetMatches(GameObject go, List<GameObject> matchedTiles)
     {
         var level = levelManager.level;
-        var idx = levelManager.tileEntities.FindIndex(x => x == go);
+        var idx = levelManager.cellEntities.FindIndex(x => x == go);
         var i = idx % level.grid_width;
         var j = idx / level.grid_width;
 
@@ -78,7 +73,7 @@ public class GameMechanic : MonoBehaviour
             if (IsValidCell(surroundingTile))
             {
                 var tileIndex = (level.grid_width * surroundingTile.y) + surroundingTile.x;
-                var tile = levelManager.tileEntities[tileIndex];
+                var tile = levelManager.cellEntities[tileIndex];
                 if (tile != null)
                 {
                     var block = tile.GetComponent<Cube>();
@@ -105,7 +100,7 @@ public class GameMechanic : MonoBehaviour
             if (IsValidCell(surroundingTile))
             {
                 var tileIndex = (level.grid_width * surroundingTile.y) + surroundingTile.x;
-                var tile = levelManager.tileEntities[tileIndex];
+                var tile = levelManager.cellEntities[tileIndex];
                 if (tile != null)
                 {
                     var block = tile.GetComponent<Cube>();
@@ -126,7 +121,7 @@ public class GameMechanic : MonoBehaviour
         DestroyConnectedBoosters(cellToDestroy, cellsToBeDestroyed, usedBoosters);
         foreach (var block in cellsToBeDestroyed)
         {
-            var idx = levelManager.tileEntities.FindIndex(x => x == block);
+            var idx = levelManager.cellEntities.FindIndex(x => x == block);
             DestroyCell(block.GetComponent<Cell>(), idx);
         }
         if (isApplyGravity)
@@ -139,7 +134,7 @@ public class GameMechanic : MonoBehaviour
     private void DestroyConnectedBoosters(Cell cellToDestroy, List<GameObject> cellsToBeDestroyed,
         List<GameObject> usedBoosters)
     {
-        var cubeId = levelManager.tileEntities.FindIndex(x => x == cellToDestroy.gameObject);
+        var cubeId = levelManager.cellEntities.FindIndex(x => x == cellToDestroy.gameObject);
         var newcellsToBeDestroyed = cellToDestroy.GetComponent<Booster>().Resolve(cubeId);
         usedBoosters.Add(cellToDestroy.gameObject);
         //cellToDestroy.GetComponent<Booster>().ShowFx(gamePools, this, cubeId);
@@ -178,7 +173,7 @@ public class GameMechanic : MonoBehaviour
             if (IsValidCell(surroundingTile))
             {
                 var tileIndex = (level.grid_width * surroundingTile.y) + surroundingTile.x;
-                var tile = levelManager.tileEntities[tileIndex];
+                var tile = levelManager.cellEntities[tileIndex];
                 if (tile != null)
                 {
                     var block = tile.GetComponent<Cube>();
@@ -216,7 +211,7 @@ public class GameMechanic : MonoBehaviour
             }
         }
         Cell.Explode();
-        levelManager.tileEntities[tileIndex] = null;
+        levelManager.cellEntities[tileIndex] = null;
         Cell.GetComponent<PooledObject>().pool.ReturnObject(Cell.gameObject);
 
     }

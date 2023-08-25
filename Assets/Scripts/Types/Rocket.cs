@@ -144,16 +144,18 @@ public class Rocket : Booster
         var tileEntities = LevelManager.Instance.tileEntities;
         var idx = x + (y * LevelManager.Instance.level.grid_width);
         if (IsValidTile(LevelManager.Instance.level, x, y) &&
-            tileEntities != null)
+            tileEntities[idx] != null)
         {
             if (tileEntities[idx].TryGetComponent(out TNT tnt))
             {
+                if(tnt != null)
                 return 10;
             }
 
             if (tileEntities[idx].TryGetComponent(out Rocket rocket))
             {
-                return 1;
+                if(rocket != null)
+                    return 1;
             }
         }
 

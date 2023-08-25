@@ -131,3 +131,6 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   type: 0
+  rocketHintSprite: {fileID: 21300000, guid: c0f6ccba49dea48e6aff81a8a4ebe20d, type: 3}
+  tntHintSprite: {fileID: 21300000, guid: 0fe326d89c5cc44fea8b38ba49e23cd1, type: 3}
+  sprite: {fileID: 21300000, guid: 8550611f0dc56437b8db1801647a9a36, type: 3}

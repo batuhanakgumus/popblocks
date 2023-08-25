@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using TMPro;
-using FullSerializer;
 using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -8,11 +7,13 @@ using UnityEngine.UI;
 
 public class AreaManager : MonoBehaviour
 {
+    private int _currentLevel;
+
     public AreaItem[] areas;
+    public List<AreaState> areaProgression;
+
     public Button levelButton;
     public TextMeshProUGUI levelButtonText;
-    private int _currentLevel;
-    public List<AreaState> areaProgression;
     
     private void Awake()
     {
@@ -25,6 +26,11 @@ public class AreaManager : MonoBehaviour
         if (PlayerPrefs.HasKey("currentLevel"))
         {
             _currentLevel = PlayerPrefs.GetInt("currentLevel");
+            if (_currentLevel > 1)
+            {
+                areas[_currentLevel-2].areaState = AreaState.Unlocked;
+                areas[_currentLevel-2].Initialize();
+            }
             if (_currentLevel>10)
             {
                 levelButtonText.text = "Finished";
@@ -33,11 +39,6 @@ public class AreaManager : MonoBehaviour
             else
             {
                 levelButtonText.text = _currentLevel.ToString();
-                if (_currentLevel > 1)
-                {
-                    areas[_currentLevel-2].areaState = AreaState.Unlocked;
-                    areas[_currentLevel-2].Initialize();
-                }
             }
         }
         else

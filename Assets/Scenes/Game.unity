@@ -761,6 +761,7 @@ MonoBehaviour:
   gamePools: {fileID: 1284794491}
   levelLocation: {fileID: 1956284970}
   tilePositions: []
+  gameMechanic: {fileID: 11062530}
   goalGrid: {fileID: 80967324}
   moveText: {fileID: 832439805}
   remainingMove: 0

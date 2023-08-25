@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
-using FullSerializer;
 using DG.Tweening;
 using Newtonsoft.Json;
 using TMPro;
@@ -24,10 +23,10 @@ public class LevelManager : MonoBehaviour
     public static LevelManager Instance;
     private int currentLevel => PlayerPrefs.GetInt("currentLevel");
     public Dictionary<BoosterType, int> boosterNeededMatches = new Dictionary<BoosterType, int>();
+    public GameMechanic gameMechanic;
 
 
-    [Header("Level Passing")]
-    public Transform goalGrid;
+    [Header("Level Passing")] public Transform goalGrid;
     public TextMeshProUGUI moveText;
     public int remainingMove;
     public int boxGoalCount;
@@ -36,7 +35,7 @@ public class LevelManager : MonoBehaviour
     public List<Goal> goals;
     public Goal goalPrefab;
     public GameObject winPanel;
-    
+
     public LevelManager()
     {
         boosterNeededMatches.Add(BoosterType.HorizontalRocket, 3);
@@ -46,14 +45,14 @@ public class LevelManager : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance != null && Instance != this) 
-        { 
-            Destroy(this); 
-        } 
-        else 
-        { 
-            Instance = this; 
-        } 
+        if (Instance != null && Instance != this)
+        {
+            Destroy(this);
+        }
+        else
+        {
+            Instance = this;
+        }
     }
 
     private void Start()
@@ -68,6 +67,11 @@ public class LevelManager : MonoBehaviour
         {
             GenerateLevel();
         }
+
+        if (Input.GetKeyDown(KeyCode.H))
+        {
+            CheckHint();
+        }
     }
 
     private GameObject CreateBlock(GameObject go)
@@ -79,15 +83,20 @@ public class LevelManager : MonoBehaviour
 
     private void GenerateLevel()
     {
-        var serializer = new fsSerializer();
-        level = FileUtils.LoadJsonFile<Level>(serializer, "Levels/level_" + currentLevel);
+        level = JsonConvert.DeserializeObject<Level>(Resources.Load<TextAsset>("Levels/level_" + currentLevel).text);
+
         level.grid.Reverse();
         remainingMove = level.move_count;
         moveText.text = remainingMove.ToString();
         foreach (var entity in tileEntities)
         {
-            entity.GetComponent<PooledObject>().pool.ReturnObject(entity.gameObject);   
+            if (entity!=null)
+            {
+                entity.TryGetComponent(out PooledObject pooledObject);
+                pooledObject.pool.ReturnObject(entity.gameObject);
+            }
         }
+
         tileEntities.Clear();
         tilePositions.Clear();
         for (var j = 0; j < level.grid_height; j++)
@@ -119,9 +128,11 @@ public class LevelManager : MonoBehaviour
             block.transform.position = newPos;
             tilePositions.Add(newPos);
         }
-        var zoomLevel = 1.4f;
+
+        var zoomLevel = 1.45f;
         mainCamera.orthographicSize = (float)((totalWidth * zoomLevel) * (Screen.height / (float)Screen.width) * 0.5f);
         SetGoal();
+        CheckHint();
     }
 
 
@@ -130,66 +141,71 @@ public class LevelManager : MonoBehaviour
         return CreateBlock(gamePools.GetCell(level, new CubeTile { type = CubeType.rand }).gameObject);
     }
 
-    public void ApplyGravity()
+    public void CheckHint()
     {
-        DOVirtual.DelayedCall(0.5f, () =>
+        var cellsToBeHint = new List<GameObject>();
+
+        foreach (var cell in tileEntities)
         {
-            for (var i = 0; i < level.grid_width; i++)
+            if (cell!=null && cell.TryGetComponent(out Cube cube))
             {
-                for (var j= level.grid_height-1 ; j >=0 ; j--)
+                if (IsColorCube(cube))
                 {
-                    var tileIndex = i + (j * level.grid_width);
-                    if (tileEntities[tileIndex] == null ||
-                        IsEmptyBlock(tileEntities[tileIndex].GetComponent<Cell>()) ||
-                        IsStoneBlock(tileEntities[tileIndex].GetComponent<Cell>()))
+                    cube.NoHint();
+                    gameMechanic.GetMatches(cell, cellsToBeHint);
+
+                    if (cellsToBeHint.Count >= 5)
                     {
-                        continue;
+                        foreach (var cellObj in cellsToBeHint)
+                        {
+                            cellObj.TryGetComponent(out Cube cCube);
+                            cCube.GiveTntHint();
+                        }
+                    }
+                    else if (cellsToBeHint.Count > 2 && cellsToBeHint.Count < 5)
+                    {
+                        foreach (var cellObj in cellsToBeHint)
+                        {
+                            cellObj.TryGetComponent(out Cube cCube);
+                            cCube.GiveRocketHint();
+                        }
+                    }
+                    else
+                    {
+                        foreach (var cellObj in cellsToBeHint)
+                        {
+                            cellObj.TryGetComponent(out Cube cCube);
+                            cCube.NoHint();
+                        }
                     }
 
-                    var bottom = -1;
-                    for (var k = j; k < level.grid_height; k++)
-                    {
-                        var idx = i + (k * level.grid_width);
-                        if (tileEntities[idx] == null)
-                        {
-                            bottom = k;
-                        }
-                        else
-                        {
-                            var block = tileEntities[idx].GetComponent<Cube>();
-                            if (block != null && block.type == CubeType.s)
-                            {
-                                break;
-                            }
-                        }
-                    }
-
-                    if (bottom != -1)
-                    {
-                        var tile = tileEntities[tileIndex];
-                        if (tile != null)
-                        {
-                            var numTilesToFall = bottom - j;
-                            tileEntities[tileIndex + (numTilesToFall * level.grid_width)] =
-                                tileEntities[tileIndex];
-                            var tween = tile.transform.DOMove(
-                                tilePositions[tileIndex + level.grid_width * numTilesToFall],
-                                blockFallSpeed).SetEase(Ease.InQuad);
-                            tileEntities[tileIndex] = null;
-                        }
-                    }
+                    cellsToBeHint.Clear();
                 }
             }
+        }
+    }
 
-            for (var i = 0; i < level.grid_width; i++)
+    public void ApplyGravity()
+    {
+        for (var i = 0; i < level.grid_width; i++)
+        {
+            for (var j = level.grid_height - 1; j >= 0; j--)
             {
-                var numEmpties = 0;
-                for (var j = 0; j < level.grid_height; j++)
+                var tileIndex = i + (j * level.grid_width);
+                if (tileEntities[tileIndex] == null ||
+                    IsEmptyBlock(tileEntities[tileIndex].GetComponent<Cell>()) ||
+                    IsStoneBlock(tileEntities[tileIndex].GetComponent<Cell>()))
                 {
-                    var idx = i + (j * level.grid_width);
+                    continue;
+                }
+
+                var bottom = -1;
+                for (var k = j; k < level.grid_height; k++)
+                {
+                    var idx = i + (k * level.grid_width);
                     if (tileEntities[idx] == null)
                     {
-                        numEmpties += 1;
+                        bottom = k;
                     }
                     else
                     {
@@ -201,51 +217,88 @@ public class LevelManager : MonoBehaviour
                     }
                 }
 
-                if (numEmpties > 0)
+                if (bottom != -1)
                 {
-                    for (var j = 0; j < level.grid_height; j++)
+                    var tile = tileEntities[tileIndex];
+                    if (tile != null)
                     {
-                        var tileIndex = i + (j * level.grid_width);
-                        var isEmptyTile = false;
-                        var isStoneTile = false;
-                        if (tileEntities[tileIndex] != null)
-                        {
-                            var blockTile = tileEntities[tileIndex].GetComponent<Cube>();
-                            if (blockTile != null)
-                            {
-                                isEmptyTile = blockTile.type == CubeType.Empty;
-                                isStoneTile = blockTile.type == CubeType.s;
-                            }
-
-                            if (isStoneTile)
-                            {
-                                break;
-                            }
-                        }
-
-                        if (tileEntities[tileIndex] == null && !isEmptyTile)
-                        {
-                            var tile = CreateNewBlock();
-                            var pos = tilePositions[i];
-                            pos.y = (float)(tilePositions[i].y +
-                                            (numEmpties * (blockHeight + verticalSpacing)));
-                            --numEmpties;
-                            tile.transform.position = pos;
-                            var tween = tile.transform.DOMove(
-                                tilePositions[tileIndex],
-                                blockFallSpeed).SetEase(Ease.InQuad);
-                            tileEntities[tileIndex] = tile;
-                        }
-
-                        if (tileEntities[tileIndex] != null)
-                        {
-                            tileEntities[tileIndex].GetComponent<SpriteRenderer>().sortingOrder =
-                                level.grid_height - j;
-                        }
+                        var numTilesToFall = bottom - j;
+                        tileEntities[tileIndex + (numTilesToFall * level.grid_width)] =
+                            tileEntities[tileIndex];
+                        tile.transform.DOMove(
+                            tilePositions[tileIndex + level.grid_width * numTilesToFall],
+                            blockFallSpeed).SetEase(Ease.InQuad);
+                        tileEntities[tileIndex] = null;
                     }
                 }
             }
-        });
+        }
+
+        for (var i = 0; i < level.grid_width; i++)
+        {
+            var numEmpties = 0;
+            for (var j = 0; j < level.grid_height; j++)
+            {
+                var idx = i + (j * level.grid_width);
+                if (tileEntities[idx] == null)
+                {
+                    numEmpties += 1;
+                }
+                else
+                {
+                    var block = tileEntities[idx].GetComponent<Cube>();
+                    if (block != null && block.type == CubeType.s)
+                    {
+                        break;
+                    }
+                }
+            }
+
+            if (numEmpties > 0)
+            {
+                for (var j = 0; j < level.grid_height; j++)
+                {
+                    var tileIndex = i + (j * level.grid_width);
+                    var isEmptyTile = false;
+                    var isStoneTile = false;
+                    if (tileEntities[tileIndex] != null)
+                    {
+                        var blockTile = tileEntities[tileIndex].GetComponent<Cube>();
+                        if (blockTile != null)
+                        {
+                            isEmptyTile = blockTile.type == CubeType.Empty;
+                            isStoneTile = blockTile.type == CubeType.s;
+                        }
+
+                        if (isStoneTile)
+                        {
+                            break;
+                        }
+                    }
+
+                    if (tileEntities[tileIndex] == null && !isEmptyTile)
+                    {
+                        var tile = CreateNewBlock();
+                        var pos = tilePositions[i];
+                        pos.y = (float)(tilePositions[i].y +
+                                        (numEmpties * (blockHeight + verticalSpacing)));
+                        --numEmpties;
+                        tile.transform.position = pos;
+                        var tween = tile.transform.DOMove(
+                            tilePositions[tileIndex],
+                            blockFallSpeed).SetEase(Ease.InQuad).OnComplete(()=>CheckHint());
+                        tileEntities[tileIndex] = tile;
+                    }
+
+                    if (tileEntities[tileIndex] != null)
+                    {
+                        tileEntities[tileIndex].GetComponent<SpriteRenderer>().sortingOrder =
+                            level.grid_height - j;
+                    }
+                }
+            }
+        }
+        
     }
 
     public void CreateBooster(int numMatchedBlocks, int cubeId)
@@ -268,7 +321,7 @@ public class LevelManager : MonoBehaviour
             CreateBooster(GetBoosterPool(booster.Key).GetObject(), cubeId);
         }
     }
-    
+
     private void CreateBooster(GameObject booster, int cubeId)
     {
         booster.transform.position = tilePositions[cubeId];
@@ -302,49 +355,52 @@ public class LevelManager : MonoBehaviour
         {
             Lose();
         }
+
         CheckGoalCount();
     }
-    
+
     public void SetGoal()
     {
         boxGoalCount = 0;
         stoneGoalCount = 0;
         vaseGoalCount = 0;
-        for (int i = 0; i < level.grid_height*level.grid_width; i++)
+        for (int i = 0; i < level.grid_height * level.grid_width; i++)
         {
             if (level.grid[i] == "bo")
             {
                 boxGoalCount++;
             }
+
             if (level.grid[i] == "s")
             {
                 stoneGoalCount++;
             }
+
             if (level.grid[i] == "v")
             {
                 vaseGoalCount++;
             }
         }
+
         if (boxGoalCount > 0)
         {
-            var goal =Instantiate(goalPrefab, goalGrid);
-            goal.SetGoal(CubeType.bo,boxGoalCount);
+            var goal = Instantiate(goalPrefab, goalGrid);
+            goal.SetGoal(CubeType.bo, boxGoalCount);
             goals.Add(goal);
         }
 
         if (stoneGoalCount > 0)
         {
-            var goal =Instantiate(goalPrefab, goalGrid);
-            goal.SetGoal(CubeType.s,stoneGoalCount);
+            var goal = Instantiate(goalPrefab, goalGrid);
+            goal.SetGoal(CubeType.s, stoneGoalCount);
             goals.Add(goal);
         }
 
         if (vaseGoalCount > 0)
         {
-            var goal =Instantiate(goalPrefab, goalGrid);
-            goal.SetGoal(CubeType.v,vaseGoalCount);
+            var goal = Instantiate(goalPrefab, goalGrid);
+            goal.SetGoal(CubeType.v, vaseGoalCount);
             goals.Add(goal);
-
         }
     }
 
@@ -356,25 +412,37 @@ public class LevelManager : MonoBehaviour
             {
                 goal.SetAmountAndAndCheckGoal(boxGoalCount);
             }
+
             if (goal.type == CubeType.s)
             {
                 goal.SetAmountAndAndCheckGoal(stoneGoalCount);
             }
+
             if (goal.type == CubeType.v)
             {
                 goal.SetAmountAndAndCheckGoal(vaseGoalCount);
             }
         }
 
-        if (stoneGoalCount+vaseGoalCount+boxGoalCount <= 0)
+        if (stoneGoalCount + vaseGoalCount + boxGoalCount <= 0)
         {
             winPanel.SetActive(true);
         }
     }
 
+    private bool IsColorCube(Cell cell)
+    {
+        var cube = cell as Cube;
+        return cube != null &&
+               (cube.type == CubeType.b ||
+                cube.type == CubeType.r ||
+                cube.type == CubeType.g ||
+                cube.type == CubeType.y);
+    }
+
     public void LevelPassed()
     {
-        PlayerPrefs.SetInt("currentLevel",PlayerPrefs.GetInt("currentLevel")+1);
+        PlayerPrefs.SetInt("currentLevel", PlayerPrefs.GetInt("currentLevel") + 1);
         SceneManager.LoadScene(0);
     }
 
@@ -382,7 +450,7 @@ public class LevelManager : MonoBehaviour
     {
         GenerateLevel();
     }
-    
+
     private bool IsEmptyBlock(Cell Cell)
     {
         var block = Cell as Cube;

@@ -23,7 +23,7 @@ public class Goal : MonoBehaviour
         completed.SetActive(false);
     }
 
-    private  void GetType()
+    private new void GetType()
     {
         if (type == CubeType.bo)
         {

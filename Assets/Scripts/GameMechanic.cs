@@ -33,46 +33,7 @@ public class GameMechanic : MonoBehaviour
                 }
             }
         }
-
-        if (Input.GetKeyDown(KeyCode.H))
-        {
-            //CheckHint();
-        }
     }
-    // public void CheckHint()
-    // {
-    //     var cellsToBeHint = new List<GameObject>();
-    //
-    //     foreach (var cell in levelManager.tileEntities)
-    //     {
-    //         var cube = cell.GetComponent<Cube>();
-    //         if (IsColorCube(cube))
-    //         {
-    //             GetMatches(cell,cellsToBeHint);
-    //             if (cellsToBeHint.Count <= 2)
-    //             {
-    //                 foreach (var cell1 in cellsToBeHint)
-    //                 {
-    //                     cell1.GetComponent<Cube>().NoHint();
-    //                 }
-    //             }
-    //             if (cellsToBeHint.Count > 2 && cellsToBeHint.Count < 5)
-    //             {
-    //                 foreach (var cell1 in cellsToBeHint)
-    //                 {
-    //                     cell1.GetComponent<Cube>().GiveRocketHint();
-    //                 }
-    //             }
-    //             if (cellsToBeHint.Count >= 5)
-    //             {
-    //                 foreach (var cell1 in cellsToBeHint)
-    //                 {
-    //                     cell1.GetComponent<Cube>().GiveTntHint();
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
 
     private bool IsBoosterBlock(Cell Cell)
     {
@@ -98,7 +59,7 @@ public class GameMechanic : MonoBehaviour
         }
     }
 
-    private void GetMatches(GameObject go, List<GameObject> matchedTiles)
+    public void GetMatches(GameObject go, List<GameObject> matchedTiles)
     {
         var level = levelManager.level;
         var idx = levelManager.tileEntities.FindIndex(x => x == go);
@@ -258,16 +219,6 @@ public class GameMechanic : MonoBehaviour
         levelManager.tileEntities[tileIndex] = null;
         Cell.GetComponent<PooledObject>().pool.ReturnObject(Cell.gameObject);
 
-    }
-    
-    private bool IsColorCube(Cell cell)
-    {
-        var cube = cell as Cube;
-        return cube != null &&
-               (cube.type == CubeType.b ||
-                cube.type == CubeType.r ||
-                cube.type == CubeType.g ||
-                cube.type == CubeType.y);
     }
 
 
